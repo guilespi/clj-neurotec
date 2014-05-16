@@ -57,6 +57,17 @@
     (for [r (.getRecords fingers)]
       (build-nf-record r))))
 
+(defn buffer
+  [template]
+  ;;TODO move the buffer to an autogrow buffer
+  (let [buff (NBuffer. 50000)]
+    (.save template buff)
+    buff))
+
+(defn save
+  [template path]
+  (NFile/writeAllBytes path (buffer template)))
+
 (comment
 
   (def t (from-file "/Users/guilespi/Documents/Development/interrupted/biometrics/Neurotech/Bin/watson/index.dat"))
