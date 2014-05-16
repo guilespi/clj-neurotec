@@ -44,10 +44,10 @@
   [options]
   (when (obtain-license *default-components*)
     (doto (NBiometricClient.)
-      (.setMatchingThreshold (closest-threshold 0.000001))
+      (.setMatchingThreshold (closest-threshold 0.00001))
       (.setFingersMatchingSpeed NMatchingSpeed/LOW)
       ;;finger quality threshold from 0-255
-      (.setFingersQualityThreshold 200)
+      (.setFingersQualityThreshold 10)
       (.setFingersTemplateSize NTemplateSize/LARGE)
       (.setMatchingWithDetails true)
       (.setFingersCalculateNFIQ true)
@@ -75,3 +75,8 @@
 (defn enroll
   [client subject]
   (= (NBiometricStatus/OK) (.enroll client subject false)))
+
+(defn create-template
+  [client subject]
+  (when (= (NBiometricStatus/OK) (.createTemplate client subject))
+    (.getTemplate subject)))
