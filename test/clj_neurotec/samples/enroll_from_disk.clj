@@ -9,7 +9,7 @@
 
 (defmacro traverse-and-apply
   [dir fun]
-  `(let [files# (rest (file-seq (io/file ~dir)))]
+  `(let [files# (filter #(.endsWith (.getPath %) "bmp") (file-seq (io/file ~dir)))]
      (doseq [f# files#]
        (let [finger# (s/finger-from-file (.getPath f#))
              subject# (s/make-subject {:id (.getName f#)
