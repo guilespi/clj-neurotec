@@ -22,7 +22,7 @@
   (println "Identifying from file" filename)
   (let [finger (s/finger-from-file filename)
         subject (s/make-subject {:id (str (java.util.UUID/randomUUID))
-                                   :fingers [finger]})]
+                                 :fingers [finger]})]
     (println "Identifying subject" subject)
     (c/identify client subject)))
 
