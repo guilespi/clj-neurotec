@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [com.neurotec/neurotec-core "5.0.0.0"]
+                 [com.neurotec/neurotec-cluster "5.0.0.0"]
                  [com.neurotec/neurotec-licensing "5.0.0.0"]
                  [com.neurotec/neurotec-media "5.0.0.0"]
                  [com.neurotec/neurotec-media-processing "5.0.0.0"]
