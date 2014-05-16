@@ -10,21 +10,25 @@
                          (Platform/isLinux) :linux
                          :isMac :mac)))
 
+;;TODO: this path mangling strategy was copied from the tutorials source
+;;code and is a piece of shit, needs rethinking
+
 (defmethod get-os-path :windows
   []
   (let [working-dir (System/getProperty "user.dir")
         parts (butlast (clojure.string/split working-dir (re-pattern file-separator)))]
     (if (.endsWith (last parts) "Bin")
-      (clojure.string/join (concat parts [file-separator (if (Platform/is64Bit) "Win64_x64" "Win32_x86")]))
+      (clojure.string/join file-separator (concat parts
+                                                  [file-separator (if (Platform/is64Bit) "Win64_x64" "Win32_x86")]))
       "")))
 
 (defmethod get-os-path :linux
   []
-  (let [working-dir (System/getProperty "user.dir")
+  (let [working-dir "/home/guilespi/Neurotec_Biometric_5_0_SDK_Trial/Bin/Linux_x86_64/"
         parts (butlast (clojure.string/split working-dir (re-pattern file-separator)))]
     (if (> (count parts) 1)
-      (clojure.string/join (concat (butlast parts)
-                                   [file-separator "Lib" file-separator (if (Platform/is64Bit) "Linux_x86_64" "Linux_x86")]))
+      (clojure.string/join file-separator (concat (butlast parts)
+                                                  ["Lib" (if (Platform/is64Bit) "Linux_x86_64" "Linux_x86")]))
       "")))
 
 (defmethod get-os-path :mac
@@ -32,6 +36,8 @@
   "/Library/Frameworks/Neurotechnology/")
 
 (defn init-library-path!
+  "Updates jna and java library paths in order for the Neurotec
+   native libraries to be found"
   []
   (let [field-sys-path (.getDeclaredField ClassLoader "sys_paths")
         os-path (get-os-path)
@@ -45,6 +51,9 @@
 
 
 (defn load-libraries
+  "Loads libraries in the proper places for clojure to see them, see here:
+   https://groups.google.com/forum/#!searchin/clojure/classloader%7Csort:date/clojure/px5uYUU8sfM/N8ZVXkgYdxUJ"
   []
   (init-library-path!)
-  (clojure.lang.RT/loadLibrary "NCore"))
+  (doseq [lib ["NCore" "NLicensing" "NBiometrics" "NBiometricClient" "NMedia" "NMediaProc"]]
+    (clojure.lang.RT/loadLibrary lib)))
