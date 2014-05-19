@@ -1,7 +1,9 @@
 (ns clj-neurotec.template
-  (:import (com.neurotec.biometrics NFMinutiaFormat NTemplate)
-           (com.neurotec.io NFile NBuffer)))
+  (:import (com.neurotec.biometrics NFMinutiaFormat NTemplate NFRecord NFMinutia NFTemplate)
+           (com.neurotec.io NFile NBuffer)
+           (java.util EnumSet)))
 
+(set! *warn-on-reflection* true)
 
 (defn from-file
   [file]
@@ -15,57 +17,57 @@
 
 (defn- has-quality?
   [format]
-  (.contains format NFMinutiaFormat/HAS_QUALITY))
+  (.contains ^EnumSet format NFMinutiaFormat/HAS_QUALITY))
 
 (defn- has-g?
   [format]
-  (.contains format NFMinutiaFormat/HAS_G))
+  (.contains ^EnumSet format NFMinutiaFormat/HAS_G))
 
 (defn- has-curvature?
   [format]
-  (.contains format NFMinutiaFormat/HAS_CURVATURE))
+  (.contains ^EnumSet format NFMinutiaFormat/HAS_CURVATURE))
 
 (defn- build-minutia
   [format m]
-  {:x (. m x)
-   :y (. m y)
-   :angle (rotation->degrees (bit-and (. m angle) 0xFF))
-   :quality (when (has-quality? format) (bit-and (. m quality) 0xFF))
-   :g (when (has-g? format) (. m g))
-   :curvature (when (has-curvature? format) (. m curvature))})
+  {:x (. ^NFMinutia m x)
+   :y (. ^NFMinutia m y)
+   :angle (rotation->degrees (bit-and (. ^NFMinutia m angle) 0xFF))
+   :quality (when (has-quality? format) (bit-and (. ^NFMinutia m quality) 0xFF))
+   :g (when (has-g? format) (. ^NFMinutia m g))
+   :curvature (when (has-curvature? format) (. ^NFMinutia m curvature))})
 
 (defn- build-nf-record
   [r]
-  {:g (.getG r)
-   :impression-type (.getImpressionType r)
-   :pattern-class (.getPatternClass r)
-   :beff-product-type (.getCBEFFProductType r)
-   :position (.getPosition r)
-   :ridge-counts-type (.getRidgeCountsType r)
-   :width (.getWidth r)
-   :height (.getHeight r)
-   :horizontal-resolution (.getHorzResolution r)
-   :vertical-resolution (.getVertResolution r)
-   :quality (.getQuality r)
-   :size (.getSize r)
-   :minutia-count (.. r getMinutiae size)
-   :minutia (doall (map (partial build-minutia (.getMinutiaFormat r)) (.getMinutiae r)))})
+  {:g (.getG ^NFRecord r)
+   :impression-type (.getImpressionType ^NFRecord r)
+   :pattern-class (.getPatternClass ^NFRecord r)
+   :beff-product-type (.getCBEFFProductType ^NFRecord r)
+   :position (.getPosition ^NFRecord r)
+   :ridge-counts-type (.getRidgeCountsType ^NFRecord r)
+   :width (.getWidth ^NFRecord r)
+   :height (.getHeight ^NFRecord r)
+   :horizontal-resolution (.getHorzResolution ^NFRecord r)
+   :vertical-resolution (.getVertResolution ^NFRecord r)
+   :quality (.getQuality ^NFRecord r)
+   :size (.getSize ^NFRecord r)
+   :minutia-count (.. ^NFRecord r getMinutiae size)
+   :minutia (doall (map (partial build-minutia (.getMinutiaFormat ^NFRecord r)) (.getMinutiae ^NFRecord r)))})
 
 (defn get-nf-records
   [template]
-  (when-let [fingers (.getFingers template)]
-    (for [r (.getRecords fingers)]
+  (when-let [fingers (.getFingers ^NTemplate template)]
+    (for [r (.getRecords ^NFTemplate fingers)]
       (build-nf-record r))))
 
 (defn buffer
   [template]
   ;;TODO move the buffer to an autogrow buffer
   (let [buff (NBuffer. 50000)]
-    (.save template buff)
+    (.save ^NTemplate template buff)
     buff))
 
 (defn save
-  [template path]
+  [^NTemplate template ^String path]
   (NFile/writeAllBytes path (buffer template)))
 
 (comment

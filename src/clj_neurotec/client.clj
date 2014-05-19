@@ -1,15 +1,18 @@
 (ns clj-neurotec.client
   (:require [clojure.walk])
   (:import (com.neurotec.biometrics.client NBiometricClient)
-           (com.neurotec.biometrics NMatchingSpeed NTemplateSize NBiometricStatus)
+           (com.neurotec.biometrics NMatchingSpeed NTemplateSize NBiometricStatus NSubject
+                                    NMatchingResult)
            (com.neurotec.licensing NLicense)))
 
+
+(set! *warn-on-reflection* true)
 
 (def ^:dynamic *default-components* "Biometrics.FingerExtraction,Biometrics.FingerMatching")
 
 (defn obtain-license
   [components]
-  (NLicense/obtainComponents "192.168.0.190" 5000 components))
+  (NLicense/obtainComponents "192.168.0.190" 5000 ^String components))
 
 (defn release-license
   [components]
@@ -57,26 +60,26 @@
 
 (defn verify
   [client reference candidate]
-  {:result (= (NBiometricStatus/OK) (.verify client reference candidate))
-   :score (-> reference .getMatchingResults first .getScore)})
+  {:result (= (NBiometricStatus/OK) (.verify ^NBiometricClient client reference candidate))
+   :score (.getScore ^NMatchingResult (first (.getMatchingResults ^NSubject reference)))})
 
 (defn build-matching-result
   [m]
-  {:id (.getId m)
-   :score (.getScore m)
-   :details (.getMatchingDetails m)
-   :subject (.getSubject m)})
+  {:id (.getId ^NMatchingResult m)
+   :score (.getScore ^NMatchingResult m)
+   :details (.getMatchingDetails ^NMatchingResult m)
+   :subject (.getSubject ^NMatchingResult m)})
 
 (defn identify
   [client subject]
-  (when (= (NBiometricStatus/OK) (.identify client subject))
-    (map build-matching-result (.getMatchingResults subject))))
+  (when (= (NBiometricStatus/OK) (.identify ^NBiometricClient client subject))
+    (map build-matching-result (.getMatchingResults ^NSubject subject))))
 
 (defn enroll
   [client subject]
-  (= (NBiometricStatus/OK) (.enroll client subject false)))
+  (= (NBiometricStatus/OK) (.enroll ^NBiometricClient client subject false)))
 
 (defn create-template
-  [client subject]
-  (when (= (NBiometricStatus/OK) (.createTemplate client subject))
-    (.getTemplate subject)))
+  [^NBiometricClient client ^NSubject subject]
+  (when (= (NBiometricStatus/OK) (.createTemplate ^NBiometricClient client subject))
+    (.getTemplate ^NSubject subject)))
