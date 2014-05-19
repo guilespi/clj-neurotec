@@ -6,7 +6,6 @@
             [clj-neurotec.util :as u]
             [clojure.java.io :as io]))
 
-
 (defmacro traverse-and-apply
   [dir fun]
   `(let [files# (filter #(.endsWith (.getPath %) "bmp") (file-seq (io/file ~dir)))]
@@ -50,6 +49,18 @@
   (let [client (c/make-client {})]
     (enroll-from-dir client "/home/guilespi/Dbs/DB4_A")
     (identify-from-file client "/home/guilespi/Dbs/DB4_A/9_10.bmp")))
+
+
+(defn subject-from-template
+  [template-file]
+  (s/make-subject {:id (.getName template-file)
+                   :template (t/from-file (.getPath template-file))}))
+
+(defn enroll-from-templates
+  [client dir]
+  (let [files (filter #(.endsWith (.getPath %) "dat") (file-seq (io/file dir)))]
+    (doseq [f files]
+      (c/enroll client (subject-from-template f)))))
 
 
 (comment
