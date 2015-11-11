@@ -12,7 +12,7 @@
 
 (defn obtain-license
   [components]
-  (NLicense/obtainComponents "192.168.0.190" 5000 ^String components))
+  (NLicense/obtainComponents "/local" 5000 ^String components))
 
 (defn release-license
   [components]
