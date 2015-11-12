@@ -10,6 +10,10 @@
   (let [buffer (NFile/readAllBytes file)]
     (NTemplate. buffer)))
 
+(defn from-bytes
+  [bytes]
+  (NTemplate. (NBuffer. bytes)))
+
 (defn- rotation->degrees
   [rotation]
   (double (/ (+ (* rotation 2 360) 256)
