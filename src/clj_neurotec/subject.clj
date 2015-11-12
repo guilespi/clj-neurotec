@@ -10,6 +10,15 @@
               :unspecified NGender/UNSPECIFIED})
 
 (def finger-positions {:right-index-finger NFPosition/RIGHT_INDEX_FINGER
+                       :right-middle-finger NFPosition/LEFT_MIDDLE_FINGER
+                       :right-ring-finger NFPosition/LEFT_RING_FINGER
+                       :right-little-finger NFPosition/LEFT_LITTLE_FINGER
+                       :right-thumb NFPosition/LEFT_THUMB
+                       :left-index-finger NFPosition/LEFT_INDEX_FINGER
+                       :left-middle-finger NFPosition/LEFT_MIDDLE_FINGER
+                       :left-ring-finger NFPosition/LEFT_RING_FINGER
+                       :left-little-finger NFPosition/LEFT_LITTLE_FINGER
+                       :left-thumb NFPosition/LEFT_THUMB
                        :unknown NFPosition/UNKNOWN})
 
 (defn make-subject
@@ -30,6 +39,11 @@
       (.setId (or id (str (java.util.UUID/randomUUID)))))))
 
 
+;;when says: Invalid sample resolution:
+;;NImage image = NImageUtils.fromJPEG(fingerJPG);
+;;image.setVertResolution(500);
+;;image.setHorzResolution(500);
+;;finger.setImage(image);
 (defn finger-from-file
   "Creates a new finger from an image file"
   [filename & {:keys [position] :as opts}]
@@ -44,6 +58,9 @@
     (.setImage image)
     (.setPosition ^NFinger (get finger-positions (or position :unknown)))))
 
+(defn finger-from-stream
+  [])
+
 (defn finger-position
   [finger]
   (.getPosition ^NFinger finger))
@@ -51,6 +68,10 @@
 (defn finger-image
   [finger]
   (.getImage ^NFinger finger))
+
+(defn template
+  [subject]
+  (.getTemplate subject))
 
   (comment
     (finger-from-file "/Users/guilespi/Documents/Development/interrupted/biometrics/Neurotech/Bin/watson/index.bmp"
