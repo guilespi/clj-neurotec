@@ -13,8 +13,8 @@
 (defn obtain-license
   [components opts]
   (when (:licenses opts)
-    (mapv #(NLicense/add %)
-          (:licenses opts)))
+    (dorun (map #(NLicense/add %)
+                (:licenses opts))))
 
   (NLicense/obtainComponents (or (:license-server-address opts) "/local")
                              (or (:license-server-port opts) 5000)
