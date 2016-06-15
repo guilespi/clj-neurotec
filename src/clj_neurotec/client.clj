@@ -16,13 +16,13 @@
     (dorun (map #(NLicense/add %)
                 (:licenses opts))))
 
-  (NLicense/obtainComponents (or (:license-server-address opts) "/local")
-                             (or (:license-server-port opts) 5000)
+  (NLicense/obtainComponents ^String (or (:license-server-address opts) "/local")
+                             ^String (or (:license-server-port opts) "5000")
                              ^String components))
 
 (defn release-license
   [components]
-  (NLicense/releaseComponents components))
+  (NLicense/releaseComponents ^String components))
 
 
 ;;threshold stuff translates a user specified threshold in % to
@@ -84,6 +84,12 @@
 (defn enroll
   [client subject]
   (= (NBiometricStatus/OK) (.enroll ^NBiometricClient client subject false)))
+
+
+(defn delete
+  [client subject-id]
+  (= (NBiometricStatus/OK) (.delete ^NBiometricClient client subject-id)))
+
 
 (defn create-template
   [^NBiometricClient client ^NSubject subject]

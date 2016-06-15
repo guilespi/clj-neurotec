@@ -1,25 +1,10 @@
 (ns clj-neurotec.subject
-  (:import (com.neurotec.biometrics NFinger NSubject NGender NFPosition NTemplate)))
+  (:require [clj-neurotec.enums :refer [genders finger-positions]])
+  (:import (com.neurotec.biometrics NFinger NTemplate NSubject)))
 
 
 (set! *warn-on-reflection* true)
 
-(def genders {:male NGender/MALE
-              :female NGender/FEMALE
-              :unknown NGender/UNKNOWN
-              :unspecified NGender/UNSPECIFIED})
-
-(def finger-positions {:right-index-finger NFPosition/RIGHT_INDEX_FINGER
-                       :right-middle-finger NFPosition/LEFT_MIDDLE_FINGER
-                       :right-ring-finger NFPosition/LEFT_RING_FINGER
-                       :right-little-finger NFPosition/LEFT_LITTLE_FINGER
-                       :right-thumb-finger NFPosition/LEFT_THUMB
-                       :left-index-finger NFPosition/LEFT_INDEX_FINGER
-                       :left-middle-finger NFPosition/LEFT_MIDDLE_FINGER
-                       :left-ring-finger NFPosition/LEFT_RING_FINGER
-                       :left-little-finger NFPosition/LEFT_LITTLE_FINGER
-                       :left-thumb-finger NFPosition/LEFT_THUMB
-                       :unknown NFPosition/UNKNOWN})
 
 (defn make-subject
   "Creates a new subject with the given identifier, gender and finger information.
@@ -71,7 +56,7 @@
 
 (defn template
   [subject]
-  (.getTemplate subject))
+  (.getTemplate ^NSubject subject))
 
   (comment
     (finger-from-file "/Users/guilespi/Documents/Development/interrupted/biometrics/Neurotech/Bin/watson/index.bmp"
