@@ -8,7 +8,7 @@
                         (cond
                          (Platform/isWindows) :windows
                          (Platform/isLinux) :linux
-                         :isMac :mac)))
+                         :else :mac)))
 
 ;;TODO: this path mangling strategy was copied from the tutorials source
 ;;code and is a piece of shit, needs rethinking
@@ -33,7 +33,7 @@
 
 (defmethod get-os-path :mac
   []
-  "/Library/Frameworks/Neurotechnology/")
+  "/Users/guilespi/Documents/Development/neurotechnology/Neurotec_Biometric_6_0_SDK_Trial/Frameworks/MacOSX/")
 
 (defn init-library-path!
   "Updates jna and java library paths in order for the Neurotec
@@ -41,7 +41,6 @@
   []
   (let [field-sys-path (.getDeclaredField ClassLoader "sys_paths")
         os-path (get-os-path)
-        _ (println os-path)
         jna-path (or (System/getProperty "jna.library.path") "")
         lava-path (or (System/getProperty "java.library.path") "")]
     (System/setProperty "jna.library.path" (format "%s%s%s" jna-path path-separator os-path))
