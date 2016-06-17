@@ -66,7 +66,7 @@
 (defn buffer
   [template]
   ;;TODO move the buffer to an autogrow buffer
-  (let [buff (NBuffer. 50000)]
+  (let [buff (NBuffer. 100000)]
     (.save ^NTemplate template buff)
     buff))
 

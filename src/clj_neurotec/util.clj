@@ -15,21 +15,12 @@
 
 (defmethod get-os-path :windows
   []
-  (let [working-dir (System/getProperty "user.dir")
-        parts (butlast (clojure.string/split working-dir (re-pattern file-separator)))]
-    (if (.endsWith (last parts) "Bin")
-      (clojure.string/join file-separator (concat parts
-                                                  [file-separator (if (Platform/is64Bit) "Win64_x64" "Win32_x86")]))
-      "")))
+	"")
 
 (defmethod get-os-path :linux
   []
-  (let [working-dir "/home/guilespi/Neurotec_Biometric_5_0_SDK_Trial/Bin/Linux_x86_64/"
-        parts (butlast (clojure.string/split working-dir (re-pattern file-separator)))]
-    (if (> (count parts) 1)
-      (clojure.string/join file-separator (concat (butlast parts)
-                                                  ["Lib" (if (Platform/is64Bit) "Linux_x86_64" "Linux_x86")]))
-      "")))
+  
+ 	"")
 
 (defmethod get-os-path :mac
   []

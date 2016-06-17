@@ -11,8 +11,14 @@
 (def ^:dynamic *default-components* "Biometrics.FingerExtraction,Biometrics.FingerMatching")
 
 (defn obtain-license
-  [components]
-  (NLicense/obtainComponents "/local" 5000 ^String components))
+  [components opts]
+  (when (:licenses opts)
+    (dorun (map #(NLicense/add %)
+                (:licenses opts))))
+
+  (NLicense/obtainComponents (or (:license-server-address opts) "/local")
+                             (or (:license-server-port opts) 5000)
+                             ^String components))
 
 (defn release-license
   [components]
@@ -45,7 +51,7 @@
 
 (defn make-client
   [options]
-  (when (obtain-license *default-components*)
+  (when (obtain-license *default-components* options)
     (doto (NBiometricClient.)
       (.setMatchingThreshold (closest-threshold 0.00001))
       (.setFingersMatchingSpeed NMatchingSpeed/LOW)
