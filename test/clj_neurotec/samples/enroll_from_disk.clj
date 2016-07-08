@@ -31,6 +31,17 @@
   (println "Enrolling from dir" dir)
   (traverse-and-apply dir (partial c/enroll client) "bmp"))
 
+
+
+(defn enroll-from-file
+  [client filename]
+  (let [finger (s/finger-from-file filename :position :right-index-finger)
+        subject (s/make-subject {:id (str (java.util.UUID/randomUUID))
+                                 :fingers [finger]})]
+    (c/create-template client subject)
+    ;(c/enroll client subject)
+    ))
+
 (defn identify-from-file
   [client filename]
   (println "Identifying from file" filename)
@@ -77,7 +88,8 @@
 
 (comment
   (let [client (c/make-client {})]
-    (templates-from-dir client "/Users/guilespi/Downloads/Dbs/DB4_A"))
-    (templates-from-dir client "/home/guilespi/Dbs/DB4_A"))
+    (enroll-from-file client "/Users/guilespi/Downloads/fingerprints/0000000001-0000010000/1_1.png"))
+  (templates-from-dir client "/Users/guilespi/Downloads/Dbs/DB4_A")
+  (templates-from-dir client "/home/guilespi/Dbs/DB4_A")
 
   )

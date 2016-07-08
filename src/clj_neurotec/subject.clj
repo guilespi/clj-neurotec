@@ -1,5 +1,7 @@
 (ns clj-neurotec.subject
-  (:import (com.neurotec.biometrics NFinger NSubject NGender NFPosition NTemplate)))
+  (:import (com.neurotec.biometrics NFinger NSubject NGender NFPosition NTemplate)
+           (com.neurotec.io NBuffer)
+           (com.neurotec.images NImage NImageFormat)))
 
 
 (set! *warn-on-reflection* true)
@@ -38,25 +40,39 @@
       (.setGender (get genders (or gender :unspecified)))
       (.setId (or id (str (java.util.UUID/randomUUID)))))))
 
+(defn finger-from-image
+  "Creates a new finger from an NImage object"
+  [image {:keys [position] :as opts}]
+  (doto (NFinger.)
+    (.setImage image)
+    (.setPosition ^NFinger (get finger-positions (or position :unknown)))))
 
-;;when says: Invalid sample resolution:
-;;NImage image = NImageUtils.fromJPEG(fingerJPG);
-;;image.setVertResolution(500);
-;;image.setHorzResolution(500);
-;;finger.setImage(image);
+
 (defn finger-from-file
-  "Creates a new finger from an image file"
+  "Creates a new finger from an image file
+   If says: Invalid sample resolution, call
+   finger-from-sized-image function and pass resolution parameters"
   [filename & {:keys [position] :as opts}]
   (doto (NFinger.)
     (.setFileName filename)
     (.setPosition ^NFinger (get finger-positions (or position :unknown)))))
 
-(defn finger-from-image
-  "Creates a new finger from an NImage object"
-  [image & {:keys [position] :as opts}]
-  (doto (NFinger.)
-    (.setImage image)
-    (.setPosition ^NFinger (get finger-positions (or position :unknown)))))
+(defn slurp-bytes
+  "Slurp the bytes from a slurpable thing"
+  [x]
+  (with-open [out (java.io.ByteArrayOutputStream.)]
+    (clojure.java.io/copy (clojure.java.io/input-stream x) out)
+    (.toByteArray out)))
+
+
+(defn finger-from-sized-image
+  "Creates a new finger from an image file with resolution parameters"
+  [filename & {:keys [position height width] :as opts}]
+  (let [pixels (NBuffer/fromArray (slurp-bytes (clojure.java.io/file filename)))
+        image (NImage/fromMemory pixels (NImageFormat/getPNG))]
+    (.setVertResolution image height)
+    (.setHorzResolution image width)
+    (finger-from-image image opts)))
 
 (defn finger-from-stream
   [])
