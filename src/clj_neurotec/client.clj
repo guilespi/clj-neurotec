@@ -85,6 +85,10 @@
   [client subject]
   (= (NBiometricStatus/OK) (.enroll ^NBiometricClient client subject false)))
 
+(defn un-enroll
+  [client subject-id]
+  (= (NBiometricStatus/OK) (.delete ^NBiometricClient client subject-id)))
+
 (defn create-template
   [^NBiometricClient client ^NSubject subject]
   (when (= (NBiometricStatus/OK) (.createTemplate ^NBiometricClient client subject))
