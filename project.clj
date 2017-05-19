@@ -1,4 +1,4 @@
-(defproject clj-neurotec "0.2.3"
+(defproject clj-neurotec "0.2.4"
   :description "Neurotec Java Bindings"
   :url "https://github.com/guilespi/clj-neurotec"
   :license {:name "Eclipse Public License"
