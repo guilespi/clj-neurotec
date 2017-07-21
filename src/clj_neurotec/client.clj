@@ -51,17 +51,20 @@
 
 (defn make-client
   [options]
-  (when (obtain-license *default-components* options)
+  (when (obtain-license *default-components* (:license options))
     (doto (NBiometricClient.)
-      (.setMatchingThreshold (closest-threshold 0.00001))
-      (.setFingersMatchingSpeed NMatchingSpeed/LOW)
+      (.setMatchingThreshold (or (:matching-threshold options)
+                                 (closest-threshold 0.00001)))
+      (.setFingersMatchingSpeed (condp = (:matching-speed options)
+                                  :high NMatchingSpeed/HIGH
+                                  :medium NMatchingSpeed/MEDIUM
+                                  NMatchingSpeed/LOW))
       ;;finger quality threshold from 0-255
-      (.setFingersQualityThreshold 10)
+      (.setFingersQualityThreshold (or (:quality-threshold options) 10))
       (.setFingersTemplateSize NTemplateSize/LARGE)
       (.setMatchingWithDetails true)
       (.setFingersCalculateNFIQ true)
-      (.setFingersMaximalRotation 10)
-      (.setMatchingMaximalResultCount 20)
+      (.setMatchingMaximalResultCount (or (:maximal-result-count options) 20))
       (.setFingersFastExtraction false))))
 
 (defn verify
